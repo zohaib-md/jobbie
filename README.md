@@ -1,56 +1,97 @@
-# jobbie
+<p align="center">
+  <strong>jobbie</strong><br>
+  <sub>Privacy-first Agent Skill + CLI for evidence-based job applications</sub>
+</p>
 
-Privacy-first Agent Skill and CLI for onboarding a résumé, checking keyword gaps against a job description, drafting truthful application materials, and tracking outcomes.
+<p align="center">
+  <a href="https://www.npmjs.com/package/jobbie"><img src="https://img.shields.io/npm/v/jobbie.svg?color=111&label=npm" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/jobbie"><img src="https://img.shields.io/node/v/jobbie.svg?color=111&label=node" alt="node version"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/npm/l/jobbie.svg?color=111" alt="MIT license"></a>
+  <a href="https://github.com/zohaib-md/jobbie/releases/tag/v0.1.0"><img src="https://img.shields.io/github/v/release/zohaib-md/jobbie.svg?color=111" alt="GitHub release"></a>
+</p>
 
-**Apply with verified facts · Keep private data local · Rank listings you already have · Learn from outcomes**
+<p align="center">
+  Onboard a résumé · Check keyword gaps · Draft truthful materials · Track outcomes<br>
+  <em>Verified facts only. Private data stays on your machine. You confirm every submit.</em>
+</p>
 
-## Quick start
+---
 
-Requires Node.js 20+.
+jobbie is a local **Agent Skill** and **CLI** for your own job search. It extracts sourced facts from a résumé you provide, compares them to a posting you paste, drafts cover letters and interview prep from those facts, and keeps a ledger of what you actually submitted.
+
+It does not search a job board, auto-submit applications, solve CAPTCHA or MFA, or invent experience.
 
 ```bash
 npx jobbie@latest install
 ```
 
-Then, in a coding agent chat, with a local résumé and a pasted job description:
+Then, in Cursor (or another coding agent that supports Agent Skills), with a local résumé and a pasted job description:
 
 ```text
 Use jobbie to onboard my resume and run a keyword-gap check against this job description.
 ```
 
-Other installer commands:
+Requires **Node.js 20+**. Zero runtime dependencies.
+
+## Why jobbie
+
+| You want | jobbie does |
+| --- | --- |
+| Help applying without leaking a résumé to a SaaS | Profile in Keychain / `~/.jobbie/`. Telemetry **off** by default. |
+| Answers that match the résumé | Facts are sourced. Missing fields return `needs-user-input`, not a guess. |
+| A ranking of jobs you already found | You supply `{ company, role, url }`. Nothing is scraped around a login wall. |
+| Prepare, then you hit submit | Packets can be `prepared`. `submitted` is recorded only after visible confirmation. |
+
+## First ten minutes
+
+**1. Install the skill**
 
 ```bash
+npx jobbie@latest install
 npx jobbie@latest status
-npx jobbie@latest update
-npx jobbie@latest updates disable
-npx jobbie@latest updates enable
 ```
 
-The installer places the skill at `~/.agents/skills/jobbie` and copies it to `~/.cursor/skills/jobbie` when that directory exists.
+The skill lands at `~/.agents/skills/jobbie`, and at `~/.cursor/skills/jobbie` when that folder exists.
 
-After install, local commands also run from the package:
+**2. Onboard a résumé**
+
+Prefer `.txt` or `.md`. DOCX and simple (uncompressed) PDFs work. Scanned PDFs need a text extract — jobbie will not OCR.
 
 ```bash
 npx jobbie onboard --resume ./resume.txt
-npx jobbie ats analyze --stdin
-npx jobbie discover search --stdin < listings.json
 ```
 
-`discover search` ranks JSON listings **you or your agent supply**. Each listing needs `company`, `role`, and `url`. jobbie does not search a built-in job board.
+It will pause for target role, seniority, and work authorization. Fill those in; do not let an agent invent them.
 
-### Onboard your profile
+**3. Keyword-gap a posting**
+
+```bash
+printf '%s' '{"jobDescription":"PASTE THE JOB DESCRIPTION HERE"}' | npx jobbie ats analyze --stdin
+```
+
+Or in chat:
 
 ```text
-Use jobbie to onboard my resume and job-search preferences.
+ats analyze this posting
 ```
 
-Submission modes:
+## How a session runs
 
-- `review-each` — inspect every application before submission (default)
-- `routine-auto` — prepare an authorized batch; **each actual submission still requires explicit confirmation**
+```mermaid
+flowchart LR
+  A[Your résumé] --> B[Onboard]
+  B --> C[Verified facts]
+  D[Posting you paste] --> E[Keyword gap + score]
+  C --> E
+  E --> F[Cover letter / interview prep]
+  F --> G[You review]
+  G --> H[You submit]
+  H --> I[Ledger + outcomes]
+```
 
-### Natural commands
+Hard stops along the way: login / SSO / MFA, CAPTCHA, legal attestations, demographics, government IDs, and anything that cannot be verified from the profile or résumé.
+
+## What you can say in chat
 
 ```text
 onboard this resume
@@ -59,97 +100,105 @@ rank these job listings
 apply https://company.example/jobs/123
 draft a cover letter for this role
 prep me for this interview
-record outcome Company — Senior Engineer — interview
+record outcome Acme — Senior Engineer — interview
 ```
 
-## What it does
+Submission modes:
 
-| Collect | Qualify | Apply |
-| --- | --- | --- |
-| Onboards a local résumé into sourced facts | Scores seniority, skills, location, eligibility, work mode, and compensation | Fills forms using only verified profile and résumé facts |
-| Ranks listings you already collected from public pages | Skips closed, duplicated, ineligible, and weak-fit opportunities | Uploads one canonical résumé and drafts truthful short answers |
+- `review-each` — inspect every application (default)
+- `routine-auto` — prepare an authorized batch; **each actual submission still needs your confirmation**
 
-| Protect | Track | Improve |
-| --- | --- | --- |
-| Keeps profile data in OS-backed storage and browser auth in the browser | Records prepared packets separately from visibly confirmed submissions | Reviews results every ten submissions and proposes targeting changes |
-| Stops at sensitive or judgment-heavy steps | Captures outcomes plus optional interview quality and failure points | Never changes preferences without your approval |
+`autoEligible: true` only means a posting passed local gates. It is never permission to submit.
 
-## Extra features
+## CLI
 
-- **ATS keyword-gap reports** via `ats analyze`
-- **Cover-letter drafts** from verified facts via `cover-letter draft` (unverified highlights are rejected)
-- **Interview prep packs** via `prep generate`
-- **Telemetry disabled by default**
+Installer:
 
-## Safety by design
+```bash
+npx jobbie@latest install
+npx jobbie@latest status
+npx jobbie@latest update
+npx jobbie@latest updates disable
+npx jobbie@latest updates enable
+```
 
-The skill pauses for:
+Day to day:
 
-- passwords, SSO, MFA, and CAPTCHA
-- demographic and voluntary self-identification questions
-- legal attestations and government identifiers
-- unclear work authorization, sponsorship, location, or compensation
-- claims that cannot be verified from your profile or résumé
+```bash
+npx jobbie onboard --resume ./resume.txt
+npx jobbie ats analyze --stdin
+npx jobbie discover search --stdin < listings.json
+npx jobbie cover-letter draft --stdin
+npx jobbie prep generate --stdin
+npx jobbie safety classify --stdin
+npx jobbie ledger review
+```
 
-It never reads browser cookies or session files, never solves CAPTCHA or MFA, and never fabricates résumé facts.
-
-## Privacy
-
-| Data | Storage |
-| --- | --- |
-| Candidate profile | macOS Keychain or encrypted local file (`~/.jobbie/profile.enc`) |
-| Canonical résumé and verified facts | `~/.jobbie/` (`resume.txt`, `facts.json`) |
-| Application ledger | `~/.jobbie/applications.ndjson` and `outcomes.ndjson` |
-| Browser authentication | Existing browser session only |
-
-Override the local directory with `JOBBIE_HOME` (used by tests). Nothing is written outside that directory except the installed skill copies under `~/.agents/skills/jobbie` and, when present, `~/.cursor/skills/jobbie`.
-
-### Telemetry
-
-Telemetry is **off by default**. Enabling it does **not** send data anywhere; there is no relay configured. If you run `telemetry enable` and then `telemetry record`, jobbie may preview **only** these fields locally:
-
-| Field | Meaning |
-| --- | --- |
-| `event` | Workflow event name (for example `submitted`) |
-| `stage` | Pipeline stage (`discover`, `apply`, `outcome`) |
-| `atsPlatform` | ATS family name if already known (`greenhouse`, `lever`, …) |
-| `seniority` | Role seniority used in scoring |
-| `fitScore` | Numeric fit score |
-| `outcome` | Outcome label (`submitted`, `interview`, `rejected`, …) |
-
-Résumé text, email, phone, names, and answers are stripped. Disable again with `telemetry disable`.
-
-## Local commands
+Same commands after install, from the skill copy:
 
 ```bash
 node ~/.agents/skills/jobbie/scripts/jobbie.mjs onboard --resume ./resume.txt
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs profile check
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs ats analyze --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs discover search --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs score --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs cover-letter draft --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs prep generate --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs safety classify --stdin
-node ~/.agents/skills/jobbie/scripts/jobbie.mjs ledger review
 ```
 
-## Validate locally
+`discover search` ranks JSON **you already collected**. Each listing needs `company`, `role`, and `url`.
+
+```json
+{
+  "query": "senior engineer",
+  "listings": [
+    {
+      "company": "Example Cloud Co",
+      "role": "Senior Engineer",
+      "url": "https://jobs.example.com/123"
+    }
+  ]
+}
+```
+
+## Privacy
+
+| Data | Where it lives |
+| --- | --- |
+| Candidate profile | macOS Keychain, or encrypted `~/.jobbie/profile.enc` |
+| Canonical résumé and facts | `~/.jobbie/` (`resume.txt`, `facts.json`) |
+| Application ledger | `~/.jobbie/applications.ndjson`, `outcomes.ndjson` |
+| Browser login | Your existing browser session only |
+
+Override the data directory with `JOBBIE_HOME`. jobbie does not read cookies, local storage, or session files.
+
+Telemetry is **off**. If you run `telemetry enable`, previews are local only and limited to `event`, `stage`, `atsPlatform`, `seniority`, `fitScore`, and `outcome`. Résumé text, email, phone, and names are stripped. There is no network relay. Disable with `telemetry disable`.
+
+## Safety
+
+jobbie pauses for passwords, SSO, MFA, CAPTCHA, demographic questions, legal attestations, government identifiers, and unclear work authorization, sponsorship, location, or compensation.
+
+It never:
+
+- enters an MFA code or solves a CAPTCHA
+- bypasses bot detection
+- fabricates résumé facts, dates, titles, or salary
+- records `submitted` without `visibleConfirmation: true`
+
+## Limitations
+
+- No interviews, offers, eligibility, or “the form was filled correctly” are guaranteed.
+- No built-in job board. Listings without `company`, `role`, and `url` are rejected.
+- No silent submit. CAPTCHA, MFA, and bot checks are hard stops.
+- Missing facts are not invented.
+- PDF import is **text-based**. Image-only scans need a local `.txt` or `.md`.
+- You are responsible for reviewing claims and for platform terms of use.
+- This is an MIT-licensed side project, not a company or a placement service.
+
+## Develop
 
 ```bash
+git clone https://github.com/zohaib-md/jobbie.git
+cd jobbie
 npm test
 npm run check
 ```
 
-## Limitations
-
-- jobbie does **not** guarantee interviews, offers, eligibility, or that a form was filled correctly.
-- It does **not** auto-submit applications. `autoEligible` only means a posting passed local gates; you still confirm each submission.
-- It does **not** solve CAPTCHA, complete MFA, or evade bot detection. Those are hard stops.
-- It does **not** invent résumé facts, dates, compensation, or attestation answers. Missing facts return `needs-user-input`.
-- It does **not** search job boards. Discovery ranks listings you supply (`company`, `role`, and `url` required) and will not walk around login walls.
-- PDF import is **text-based only**. Uncompressed PDFs and DOCX files can be extracted locally. Scanned or image-only PDFs need a local `.txt` or `.md` extract. jobbie will not OCR or invent text.
-- Platform terms of use still apply. You are responsible for reviewing claims and deciding when to submit.
-- This is an MIT-licensed side project, not a company or a placement service.
+See [CONTRIBUTING.md](CONTRIBUTING.md). Starter issues: [GOOD_FIRST_ISSUES.md](GOOD_FIRST_ISSUES.md).
 
 ## Acknowledgements
 
@@ -164,10 +213,9 @@ This repository adds, on top of that base:
 
 Do not treat jobbie as a from-scratch rewrite of Applykit.
 
-## Responsible use
-
-This project assists a person with their own job search. You are responsible for reviewing factual claims, complying with applicable laws and platform terms, and deciding when an application should be submitted.
-
 ## License
 
-MIT. See [LICENSE](LICENSE). Original Applykit implementation: [manthan-jsharma/apply-kit-npm](https://github.com/manthan-jsharma/apply-kit-npm).
+MIT. See [LICENSE](LICENSE).
+
+Copyright (c) 2026 Applykit Contributors  
+Copyright (c) 2026 Mohammad Zohaib
