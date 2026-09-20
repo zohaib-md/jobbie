@@ -18,9 +18,9 @@ Create these as GitHub issues when the repository is published. Each item is siz
 
 Document how the encrypted-file fallback works on Windows and add a test that `getProfileStorageInfo()` does not mention Keychain there.
 
-## 5. Discover input validation
+## 5. HTML résumé import
 
-`discover search` currently ranks whatever JSON listings it is given. Validate required fields (`company`, `role`, `url`) and return a clear `needs-user-input` error when they are missing, without fetching pages.
+`resume import` handles `.txt`, `.md`, `.docx`, and simple `.pdf` files. Add a local HTML résumé fixture and strip tags without fetching remote stylesheets or images.
 
 ## 6. Cover-letter length option
 

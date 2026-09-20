@@ -143,8 +143,8 @@ npm run check
 - It does **not** auto-submit applications. `autoEligible` only means a posting passed local gates; you still confirm each submission.
 - It does **not** solve CAPTCHA, complete MFA, or evade bot detection. Those are hard stops.
 - It does **not** invent résumé facts, dates, compensation, or attestation answers. Missing facts return `needs-user-input`.
-- Job search ranks listings **you supply**. It is not a full job-board scraper, and it will not walk around login walls.
-- PDF/DOCX résumés are stored locally; extract text to `.txt` or `.md` before fact onboarding.
+- Job search ranks listings **you supply**. Each listing needs `company`, `role`, and `url`. It is not a job-board scraper and will not walk around login walls.
+- DOCX and simple PDFs are extracted locally when possible. Scanned PDFs still need a local `.txt` or `.md` extract — Applykit will not OCR or invent text.
 - Platform terms of use still apply. You are responsible for reviewing claims and deciding when to submit.
 - This is an MIT-licensed side project, not a company or a placement service.
 

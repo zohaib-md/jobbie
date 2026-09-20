@@ -15,7 +15,7 @@ Invoke this skill as `applykit`, `$applykit`, or `/applykit`.
 
 Use `scripts/applykit.mjs` for private state and deterministic checks. Read [references/SCHEMAS.md](references/SCHEMAS.md) before profile, score, ledger, or outcome operations.
 
-1. Ask for a local PDF, DOCX, or text résumé. Import it without modifying the source. Prefer a `.txt` or `.md` extract. Run `onboard --resume <path>` to store verified facts with their résumé section.
+1. Ask for a local PDF, DOCX, or text résumé. Import it without modifying the source. Prefer a `.txt` or `.md` extract. `onboard --resume` extracts DOCX and simple PDFs locally; scanned files still need a text extract. Never OCR or invent missing text.
 2. Run `profile check`. Collect only missing facts, then run `profile migrate --stdin` or `profile set --stdin`. Never invent work authorization, dates, or compensation.
 3. Store the profile in OS-backed storage (macOS Keychain with encrypted-file fallback). Store the canonical résumé and append-only ledgers in `~/.applykit/`.
 4. Use `review-each` for per-application approval. `routine-auto` may prepare an authorized batch, but every actual submission still needs explicit per-submission confirmation. `autoEligible: true` is never sufficient to submit.

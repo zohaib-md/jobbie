@@ -34,7 +34,11 @@ Node.js 20+ is required. There are no runtime npm dependencies.
 
 ## Suggested first contributions
 
-See [GOOD_FIRST_ISSUES.md](GOOD_FIRST_ISSUES.md).
+See [GOOD_FIRST_ISSUES.md](GOOD_FIRST_ISSUES.md). After the GitHub remote exists and `gh` is authenticated:
+
+```bash
+npm run issues
+```
 
 ## Security reports
 

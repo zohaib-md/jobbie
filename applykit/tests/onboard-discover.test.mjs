@@ -26,6 +26,16 @@ async function withTempHome(fn) {
   }
 }
 
+test('discover requires company, role, and url instead of fetching pages', () => {
+  const result = searchJobs({
+    query: 'senior engineer',
+    listings: [{ company: 'Example Cloud Co', role: 'Senior Engineer' }],
+  });
+  assert.equal(result.status, 'needs-user-input');
+  assert.equal(result.results.length, 0);
+  assert.match(result.message, /company, role, and url/i);
+});
+
 test('onboard extracts facts and does not invent work authorization', async () => {
   await withTempHome(async () => {
     const result = await onboardResume(join(root, 'fixtures/resumes/plain.txt'));
