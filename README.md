@@ -1,45 +1,48 @@
-# Applykit
+# jobbie
 
-Privacy-first Agent Skill and CLI for evidence-based job discovery, application completion, and outcome tracking.
+Privacy-first Agent Skill and CLI for onboarding a résumé, checking keyword gaps against a job description, drafting truthful application materials, and tracking outcomes.
 
-**Discover better roles · Apply with verified facts · Keep private data local · Learn from outcomes**
+**Apply with verified facts · Keep private data local · Rank listings you already have · Learn from outcomes**
 
 ## Quick start
 
 Requires Node.js 20+.
 
 ```bash
-npx applykit@latest install
+npx jobbie@latest install
 ```
 
-Then, in a coding agent chat:
+Then, in a coding agent chat, with a local résumé and a pasted job description:
 
 ```text
-Use applykit to onboard my resume and search for senior engineer roles.
+Use jobbie to onboard my resume and run a keyword-gap check against this job description.
 ```
 
 Other installer commands:
 
 ```bash
-npx applykit@latest status
-npx applykit@latest update
-npx applykit@latest updates disable
-npx applykit@latest updates enable
+npx jobbie@latest status
+npx jobbie@latest update
+npx jobbie@latest updates disable
+npx jobbie@latest updates enable
 ```
 
-The installer places the skill at `~/.agents/skills/applykit` and copies it to `~/.cursor/skills/applykit` when that directory exists.
+The installer places the skill at `~/.agents/skills/jobbie` and copies it to `~/.cursor/skills/jobbie` when that directory exists.
 
 After install, local commands also run from the package:
 
 ```bash
-npx applykit onboard --resume ./resume.txt
-npx applykit discover search --stdin < listings.json
+npx jobbie onboard --resume ./resume.txt
+npx jobbie ats analyze --stdin
+npx jobbie discover search --stdin < listings.json
 ```
+
+`discover search` ranks JSON listings **you or your agent supply**. Each listing needs `company`, `role`, and `url`. jobbie does not search a built-in job board.
 
 ### Onboard your profile
 
 ```text
-Use applykit to onboard my resume and job-search preferences.
+Use jobbie to onboard my resume and job-search preferences.
 ```
 
 Submission modes:
@@ -50,10 +53,10 @@ Submission modes:
 ### Natural commands
 
 ```text
-search jobs
-apply https://company.example/jobs/123
-run a round of 10
+onboard this resume
 ats analyze this posting
+rank these job listings
+apply https://company.example/jobs/123
 draft a cover letter for this role
 prep me for this interview
 record outcome Company — Senior Engineer — interview
@@ -61,10 +64,10 @@ record outcome Company — Senior Engineer — interview
 
 ## What it does
 
-| Discover | Qualify | Apply |
+| Collect | Qualify | Apply |
 | --- | --- | --- |
-| Ranks listings you (or your agent) collected from public employer pages | Scores seniority, skills, location, eligibility, work mode, and compensation | Fills forms using only verified profile and résumé facts |
-| Stops at CAPTCHA, login walls, and bot checks instead of scraping around them | Skips closed, duplicated, ineligible, and weak-fit opportunities | Uploads one canonical résumé and drafts truthful short answers |
+| Onboards a local résumé into sourced facts | Scores seniority, skills, location, eligibility, work mode, and compensation | Fills forms using only verified profile and résumé facts |
+| Ranks listings you already collected from public pages | Skips closed, duplicated, ineligible, and weak-fit opportunities | Uploads one canonical résumé and drafts truthful short answers |
 
 | Protect | Track | Improve |
 | --- | --- | --- |
@@ -94,16 +97,16 @@ It never reads browser cookies or session files, never solves CAPTCHA or MFA, an
 
 | Data | Storage |
 | --- | --- |
-| Candidate profile | macOS Keychain or encrypted local file (`~/.applykit/profile.enc`) |
-| Canonical résumé and verified facts | `~/.applykit/` (`resume.txt`, `facts.json`) |
-| Application ledger | `~/.applykit/applications.ndjson` and `outcomes.ndjson` |
+| Candidate profile | macOS Keychain or encrypted local file (`~/.jobbie/profile.enc`) |
+| Canonical résumé and verified facts | `~/.jobbie/` (`resume.txt`, `facts.json`) |
+| Application ledger | `~/.jobbie/applications.ndjson` and `outcomes.ndjson` |
 | Browser authentication | Existing browser session only |
 
-Override the local directory with `APPLYKIT_HOME` (used by tests). Nothing is written outside that directory except the installed skill copies under `~/.agents/skills/applykit` and, when present, `~/.cursor/skills/applykit`.
+Override the local directory with `JOBBIE_HOME` (used by tests). Nothing is written outside that directory except the installed skill copies under `~/.agents/skills/jobbie` and, when present, `~/.cursor/skills/jobbie`.
 
 ### Telemetry
 
-Telemetry is **off by default**. Enabling it does **not** send data anywhere; there is no relay configured. If you run `telemetry enable` and then `telemetry record`, Applykit may preview **only** these fields locally:
+Telemetry is **off by default**. Enabling it does **not** send data anywhere; there is no relay configured. If you run `telemetry enable` and then `telemetry record`, jobbie may preview **only** these fields locally:
 
 | Field | Meaning |
 | --- | --- |
@@ -119,15 +122,15 @@ Résumé text, email, phone, names, and answers are stripped. Disable again with
 ## Local commands
 
 ```bash
-node ~/.agents/skills/applykit/scripts/applykit.mjs onboard --resume ./resume.txt
-node ~/.agents/skills/applykit/scripts/applykit.mjs profile check
-node ~/.agents/skills/applykit/scripts/applykit.mjs discover search --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs score --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs ats analyze --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs cover-letter draft --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs prep generate --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs safety classify --stdin
-node ~/.agents/skills/applykit/scripts/applykit.mjs ledger review
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs onboard --resume ./resume.txt
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs profile check
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs ats analyze --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs discover search --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs score --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs cover-letter draft --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs prep generate --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs safety classify --stdin
+node ~/.agents/skills/jobbie/scripts/jobbie.mjs ledger review
 ```
 
 ## Validate locally
@@ -139,14 +142,27 @@ npm run check
 
 ## Limitations
 
-- Applykit does **not** guarantee interviews, offers, eligibility, or that a form was filled correctly.
+- jobbie does **not** guarantee interviews, offers, eligibility, or that a form was filled correctly.
 - It does **not** auto-submit applications. `autoEligible` only means a posting passed local gates; you still confirm each submission.
 - It does **not** solve CAPTCHA, complete MFA, or evade bot detection. Those are hard stops.
 - It does **not** invent résumé facts, dates, compensation, or attestation answers. Missing facts return `needs-user-input`.
-- Job search ranks listings **you supply**. Each listing needs `company`, `role`, and `url`. It is not a job-board scraper and will not walk around login walls.
-- DOCX and simple PDFs are extracted locally when possible. Scanned PDFs still need a local `.txt` or `.md` extract — Applykit will not OCR or invent text.
+- It does **not** search job boards. Discovery ranks listings you supply (`company`, `role`, and `url` required) and will not walk around login walls.
+- PDF import is **text-based only**. Uncompressed PDFs and DOCX files can be extracted locally. Scanned or image-only PDFs need a local `.txt` or `.md` extract. jobbie will not OCR or invent text.
 - Platform terms of use still apply. You are responsible for reviewing claims and deciding when to submit.
 - This is an MIT-licensed side project, not a company or a placement service.
+
+## Acknowledgements
+
+jobbie is derived from [Applykit](https://github.com/manthan-jsharma/apply-kit-npm) 1.0.0 by Manthan Sharma (`manthan.jsharma@gmail.com`). The original skill, installer, scoring, and local-store design are that work.
+
+This repository adds, on top of that base:
+
+- local DOCX and simple PDF text import (no OCR)
+- tested safety pauses for MFA, CAPTCHA, legal attestations, and unverifiable answers
+- sourced résumé facts that refuse to guess missing fields
+- a ledger that records `submitted` only after visible confirmation
+
+Do not treat jobbie as a from-scratch rewrite of Applykit.
 
 ## Responsible use
 
@@ -154,4 +170,4 @@ This project assists a person with their own job search. You are responsible for
 
 ## License
 
-MIT. See [LICENSE](LICENSE). Original published implementation: [manthan-jsharma/apply-kit-npm](https://github.com/manthan-jsharma/apply-kit-npm).
+MIT. See [LICENSE](LICENSE). Original Applykit implementation: [manthan-jsharma/apply-kit-npm](https://github.com/manthan-jsharma/apply-kit-npm).
