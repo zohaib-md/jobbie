@@ -174,7 +174,7 @@ function buildRecommendations(applications, outcomes) {
     proposals.push('Consider tightening seniority or must-have evidence before the next batch.');
   }
   if (rejected >= 5) {
-    proposals.push('Review ATS keyword coverage and compensation floor with applykit ats analyze.');
+    proposals.push('Review ATS keyword coverage and compensation floor with jobbie ats analyze.');
   }
   return proposals;
 }

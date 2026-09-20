@@ -30,7 +30,7 @@ export function searchJobs({ query = '', listings = [], profile = null } = {}) {
       status: 'needs-user-input',
       invalidCount: incomplete.length,
       message:
-        'Each listing needs company, role, and url. Applykit does not fetch missing pages.',
+        'Each listing needs company, role, and url. jobbie does not fetch missing pages.',
       guidance: [
         'Rank only listings the candidate or agent already collected from public pages.',
         'Do not scrape behind CAPTCHA, login, or bot detection.',

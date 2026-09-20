@@ -14,8 +14,8 @@ function getFallbackPath() {
 }
 
 function getFallbackKey() {
-  const salt = 'applykit-profile-v1';
-  return scryptSync(`${homedir()}:applykit`, salt, 32);
+  const salt = 'jobbie-profile-v1';
+  return scryptSync(`${homedir()}:jobbie`, salt, 32);
 }
 
 function encryptJson(value) {

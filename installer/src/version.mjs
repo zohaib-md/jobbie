@@ -16,5 +16,5 @@ export function getPackageRoot() {
 }
 
 export function getBundledSkillPath() {
-  return join(getPackageRoot(), 'applykit');
+  return join(getPackageRoot(), 'jobbie');
 }

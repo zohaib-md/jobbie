@@ -32,7 +32,7 @@ export async function getTelemetryStatus() {
   return {
     enabled: config.enabled === true,
     fields: TELEMETRY_FIELDS,
-    note: 'Applykit ships with telemetry disabled by default. No personal data is collected.',
+    note: 'jobbie ships with telemetry disabled by default. No personal data is collected.',
   };
 }
 

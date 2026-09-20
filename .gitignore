@@ -10,4 +10,4 @@ profile.json
 resume.pdf
 *.ndjson
 state/
-.applykit/
+.jobbie/

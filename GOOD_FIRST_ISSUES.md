@@ -8,7 +8,7 @@ Create these as GitHub issues when the repository is published. Each item is siz
 
 ## 2. Expand ATS skill synonyms
 
-`ats analyze` tokenizes job descriptions and matches a small skill list. Add a synonym map (for example `k8s` → `kubernetes`, `postgres` → `postgresql`) in `applykit/scripts/lib/ats.mjs` and tests that still refuse to invent unmatched skills.
+`ats analyze` tokenizes job descriptions and matches a small skill list. Add a synonym map (for example `k8s` → `kubernetes`, `postgres` → `postgresql`) in `jobbie/scripts/lib/ats.mjs` and tests that still refuse to invent unmatched skills.
 
 ## 3. Ledger outcome labels helper
 

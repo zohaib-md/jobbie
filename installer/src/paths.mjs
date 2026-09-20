@@ -1,8 +1,8 @@
 import { homedir, platform } from 'node:os';
 import { join } from 'node:path';
 
-export const PACKAGE_NAME = 'applykit';
-export const SKILL_DIR_NAME = 'applykit';
+export const PACKAGE_NAME = 'jobbie';
+export const SKILL_DIR_NAME = 'jobbie';
 
 export function getAgentsRoot() {
   return join(homedir(), '.agents');
@@ -13,7 +13,7 @@ export function getSkillInstallPath() {
 }
 
 export function getStateRoot() {
-  return process.env.APPLYKIT_HOME || join(homedir(), '.applykit');
+  return process.env.JOBBIE_HOME || join(homedir(), '.jobbie');
 }
 
 export function getVendorSkillPaths() {

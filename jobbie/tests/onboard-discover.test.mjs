@@ -11,16 +11,16 @@ import { readFile } from 'node:fs/promises';
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 
 async function withTempHome(fn) {
-  const previous = process.env.APPLYKIT_HOME;
-  const tempHome = await mkdtemp(join(tmpdir(), 'applykit-onboard-'));
-  process.env.APPLYKIT_HOME = tempHome;
+  const previous = process.env.JOBBIE_HOME;
+  const tempHome = await mkdtemp(join(tmpdir(), 'jobbie-onboard-'));
+  process.env.JOBBIE_HOME = tempHome;
   try {
     await fn(tempHome);
   } finally {
     if (previous === undefined) {
-      delete process.env.APPLYKIT_HOME;
+      delete process.env.JOBBIE_HOME;
     } else {
-      process.env.APPLYKIT_HOME = previous;
+      process.env.JOBBIE_HOME = previous;
     }
     await rm(tempHome, { recursive: true, force: true });
   }

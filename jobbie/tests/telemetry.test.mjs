@@ -11,16 +11,16 @@ import {
 } from '../scripts/lib/telemetry.mjs';
 
 async function withTempHome(fn) {
-  const previous = process.env.APPLYKIT_HOME;
-  const tempHome = await mkdtemp(join(tmpdir(), 'applykit-tel-'));
-  process.env.APPLYKIT_HOME = tempHome;
+  const previous = process.env.JOBBIE_HOME;
+  const tempHome = await mkdtemp(join(tmpdir(), 'jobbie-tel-'));
+  process.env.JOBBIE_HOME = tempHome;
   try {
     await fn(tempHome);
   } finally {
     if (previous === undefined) {
-      delete process.env.APPLYKIT_HOME;
+      delete process.env.JOBBIE_HOME;
     } else {
-      process.env.APPLYKIT_HOME = previous;
+      process.env.JOBBIE_HOME = previous;
     }
     await rm(tempHome, { recursive: true, force: true });
   }

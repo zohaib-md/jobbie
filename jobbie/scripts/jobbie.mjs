@@ -70,7 +70,7 @@ async function main(argv = process.argv.slice(2)) {
 }
 
 function printHelp() {
-  process.stdout.write(`applykit local commands
+  process.stdout.write(`jobbie local commands
 
 profile set --stdin
 profile migrate --stdin
@@ -135,7 +135,7 @@ async function handleProfile(action, rest) {
     return;
   }
 
-  fail('Usage: applykit profile <set|migrate|check|field>');
+  fail('Usage: jobbie profile <set|migrate|check|field>');
 }
 
 async function readStoredFacts() {
@@ -149,7 +149,7 @@ async function readStoredFacts() {
 async function handleOnboard(action, rest) {
   const resumePath = action === '--resume' ? rest[0] : action;
   if (!resumePath || resumePath === '--stdin') {
-    fail('Usage: applykit onboard --resume <path>');
+    fail('Usage: jobbie onboard --resume <path>');
   }
   const extras = rest.includes('--stdin') || action === '--stdin' ? await readStdinJson() : {};
   writeJson(await onboardResume(resumePath, extras));
@@ -157,7 +157,7 @@ async function handleOnboard(action, rest) {
 
 async function handleDiscover(action) {
   if (action !== 'search') {
-    fail('Usage: applykit discover search --stdin');
+    fail('Usage: jobbie discover search --stdin');
   }
   const input = await readStdinJson();
   const profile = await readProfile();
@@ -186,7 +186,7 @@ async function handleSafety(action) {
     writeJson(canSubmit(input));
     return;
   }
-  fail('Usage: applykit safety <classify|answer|can-submit> --stdin');
+  fail('Usage: jobbie safety <classify|answer|can-submit> --stdin');
 }
 
 async function handleFacts(action) {
@@ -196,7 +196,7 @@ async function handleFacts(action) {
     writeJson(extractFactsFromResume(resumeText, input.sourcePath ?? 'resume.txt'));
     return;
   }
-  fail('Usage: applykit facts extract --stdin');
+  fail('Usage: jobbie facts extract --stdin');
 }
 
 async function handleResume(action, rest) {
@@ -204,7 +204,7 @@ async function handleResume(action, rest) {
     writeJson(await importResume(rest[0]));
     return;
   }
-  fail('Usage: applykit resume import <path>');
+  fail('Usage: jobbie resume import <path>');
 }
 
 async function handleScore() {
@@ -237,7 +237,7 @@ async function handleLedger(action) {
     writeJson(await acknowledgeReview(await readStdinJson()));
     return;
   }
-  fail('Usage: applykit ledger <check|add|outcome|review|review-ack>');
+  fail('Usage: jobbie ledger <check|add|outcome|review|review-ack>');
 }
 
 async function handleAts(action) {
@@ -254,7 +254,7 @@ async function handleAts(action) {
     );
     return;
   }
-  fail('Usage: applykit ats analyze --stdin');
+  fail('Usage: jobbie ats analyze --stdin');
 }
 
 async function handleCoverLetter(action) {
@@ -278,7 +278,7 @@ async function handleCoverLetter(action) {
     );
     return;
   }
-  fail('Usage: applykit cover-letter draft --stdin');
+  fail('Usage: jobbie cover-letter draft --stdin');
 }
 
 async function handlePrep(action) {
@@ -300,7 +300,7 @@ async function handlePrep(action) {
     );
     return;
   }
-  fail('Usage: applykit prep generate --stdin');
+  fail('Usage: jobbie prep generate --stdin');
 }
 
 async function handleTelemetry(action) {
@@ -320,7 +320,7 @@ async function handleTelemetry(action) {
     writeJson(await recordTelemetryEvent(await readStdinJson()));
     return;
   }
-  fail('Usage: applykit telemetry <status|enable|disable|record>');
+  fail('Usage: jobbie telemetry <status|enable|disable|record>');
 }
 
 main().catch((error) => {

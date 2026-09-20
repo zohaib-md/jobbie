@@ -61,7 +61,7 @@ export function generateInterviewPrep({
     guidance: [
       'Prepare STAR stories only from verified résumé bullets.',
       'Pause if a question requires claiming unverified tools or outcomes.',
-      'Use applykit ledger outcome recording after each interview.',
+      'Use jobbie ledger outcome recording after each interview.',
     ],
   };
 }

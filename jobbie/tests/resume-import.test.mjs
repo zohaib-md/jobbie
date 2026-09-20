@@ -11,16 +11,16 @@ import { onboardResume } from '../scripts/lib/onboard.mjs';
 const execFileAsync = promisify(execFile);
 
 async function withTempHome(fn) {
-  const previous = process.env.APPLYKIT_HOME;
-  const tempHome = await mkdtemp(join(tmpdir(), 'applykit-resume-'));
-  process.env.APPLYKIT_HOME = tempHome;
+  const previous = process.env.JOBBIE_HOME;
+  const tempHome = await mkdtemp(join(tmpdir(), 'jobbie-resume-'));
+  process.env.JOBBIE_HOME = tempHome;
   try {
     await fn(tempHome);
   } finally {
     if (previous === undefined) {
-      delete process.env.APPLYKIT_HOME;
+      delete process.env.JOBBIE_HOME;
     } else {
-      process.env.APPLYKIT_HOME = previous;
+      process.env.JOBBIE_HOME = previous;
     }
     await rm(tempHome, { recursive: true, force: true });
   }
@@ -38,7 +38,7 @@ async function writeDocx(path, paragraphs) {
       .join('\n')}
   </w:body>
 </w:document>`;
-  const staging = await mkdtemp(join(tmpdir(), 'applykit-docx-'));
+  const staging = await mkdtemp(join(tmpdir(), 'jobbie-docx-'));
   await mkdir(join(staging, 'word'), { recursive: true });
   await writeFile(join(staging, 'word/document.xml'), xml);
   await execFileAsync('zip', ['-q', '-r', path, 'word'], { cwd: staging });

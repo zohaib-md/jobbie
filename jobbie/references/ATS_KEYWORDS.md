@@ -1,6 +1,6 @@
 # ATS keyword analysis
 
-Applykit's `ats analyze` command compares job-description keywords against the canonical résumé and verified profile skills.
+jobbie's `ats analyze` command compares job-description keywords against the canonical résumé and verified profile skills.
 
 ## How to use it
 

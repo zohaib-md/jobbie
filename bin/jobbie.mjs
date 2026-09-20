@@ -23,7 +23,7 @@ if (!command || INSTALLER_COMMANDS.has(command)) {
     process.exitCode = 1;
   });
 } else {
-  const script = join(dirname(fileURLToPath(import.meta.url)), '../applykit/scripts/applykit.mjs');
+  const script = join(dirname(fileURLToPath(import.meta.url)), '../jobbie/scripts/jobbie.mjs');
   const child = spawn(process.execPath, [script, ...argv], { stdio: 'inherit' });
   child.on('exit', (code, signal) => {
     if (signal) {
