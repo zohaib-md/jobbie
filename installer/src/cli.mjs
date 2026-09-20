@@ -11,7 +11,7 @@ Usage:
   npx applykit updates enable   Enable automatic update checks
   npx applykit updates disable  Disable automatic update checks
 
-Requires Node.js 20+.
+Requires Node.js 20+. After install, local commands (onboard, discover, ledger, …) are forwarded to the bundled skill CLI.
 `);
 }
 

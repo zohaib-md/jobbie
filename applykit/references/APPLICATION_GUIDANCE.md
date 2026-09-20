@@ -3,7 +3,7 @@
 ## Truthfulness
 
 - Use only profile fields, candidate-provided answers, and verified résumé facts.
-- If a field cannot be answered truthfully, pause and ask the candidate.
+- If a field cannot be answered truthfully, pause and ask the candidate. Use `safety answer --stdin`; a missing fact returns `needs-user-input`.
 - Never infer employment dates, titles, compensation, or skills.
 
 ## Narrative answers
@@ -21,8 +21,9 @@
 
 Stop and hand control to the candidate for:
 
-- authentication, MFA, and CAPTCHA;
+- authentication, MFA, and CAPTCHA (`safety classify`); never solve or bypass them;
 - legal attestations and government identifiers;
 - demographic or voluntary self-identification questions;
 - compensation questions when the posting or profile data is unclear;
-- any question requiring judgment the candidate has not authorized.
+- any question requiring judgment the candidate has not authorized;
+- any form value that cannot be traced to a verified fact.

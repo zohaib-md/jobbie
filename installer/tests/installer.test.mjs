@@ -13,7 +13,7 @@ test('installSkill copies bundled skill to agents directory', async () => {
 
   try {
     const result = await installSkill();
-    assert.equal(result.version, '1.0.0');
+    assert.equal(result.version, '1.1.0');
     assert.equal(result.installPath, getSkillInstallPath());
 
     const { readFile } = await import('node:fs/promises');

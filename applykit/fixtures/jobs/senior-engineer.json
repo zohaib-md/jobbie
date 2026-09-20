@@ -1,0 +1,24 @@
+[
+  {
+    "company": "Example Cloud Co",
+    "role": "Senior Engineer",
+    "seniority": "senior",
+    "url": "https://jobs.example-cloud.test/senior-engineer",
+    "jobId": "EC-100",
+    "postingStatus": "active",
+    "eligibility": "eligible",
+    "workMode": "remote",
+    "jobDescription": "We need TypeScript, AWS, and PostgreSQL experience to lead API work."
+  },
+  {
+    "company": "Blocked Inc",
+    "role": "Principal Engineer",
+    "seniority": "principal",
+    "url": "https://jobs.blocked.test/principal",
+    "jobId": "BL-1",
+    "postingStatus": "active",
+    "eligibility": "eligible",
+    "workMode": "onsite",
+    "jobDescription": "Principal-level Java architecture role."
+  }
+]

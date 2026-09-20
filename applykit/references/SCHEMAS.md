@@ -40,7 +40,45 @@ Optional fields include `phone`, `location`, `linkedinUrl`, `portfolioUrl`, `req
   "url": "https://jobs.example.com/123",
   "jobId": "123",
   "status": "submitted",
+  "visibleConfirmation": true,
   "fitScore": 84
+}
+```
+
+`status` defaults to `prepared`. `submitted` is accepted only with `visibleConfirmation: true`.
+
+## Safety classify input
+
+```json
+{ "text": "Please complete the reCAPTCHA" }
+```
+
+## Safety answer input
+
+```json
+{ "question": "What is your current salary?" }
+```
+
+Unverifiable questions return `{ "status": "needs-user-input" }` and never a guessed answer.
+
+## Discover search input
+
+```json
+{
+  "query": "senior engineer",
+  "listings": [
+    {
+      "company": "Example Corp",
+      "role": "Senior Engineer",
+      "url": "https://jobs.example.com/123",
+      "jobId": "123",
+      "seniority": "senior",
+      "postingStatus": "active",
+      "eligibility": "eligible",
+      "workMode": "remote",
+      "jobDescription": "TypeScript and AWS..."
+    }
+  ]
 }
 ```
 

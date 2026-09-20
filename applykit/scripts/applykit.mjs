@@ -22,6 +22,13 @@ import {
   recordTelemetryEvent,
   setTelemetryEnabled,
 } from './lib/telemetry.mjs';
+import { classifySafetyPause, proposeAnswer, canSubmit } from './lib/safety.mjs';
+import { extractFactsFromResume } from './lib/facts.mjs';
+import { onboardResume } from './lib/onboard.mjs';
+import { searchJobs } from './lib/discover.mjs';
+import { getFactsPath } from './lib/paths.mjs';
+import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
 import { readStdinJson, writeJson, fail } from './lib/stdio.mjs';
 
 async function main(argv = process.argv.slice(2)) {
@@ -49,6 +56,14 @@ async function main(argv = process.argv.slice(2)) {
       return handlePrep(action);
     case 'telemetry':
       return handleTelemetry(action);
+    case 'onboard':
+      return handleOnboard(action, rest);
+    case 'discover':
+      return handleDiscover(action);
+    case 'safety':
+      return handleSafety(action);
+    case 'facts':
+      return handleFacts(action);
     default:
       fail(`Unknown command domain: ${domain}`);
   }
@@ -69,6 +84,9 @@ ledger check|add|outcome|review|review-ack --stdin
 ats analyze --stdin
 cover-letter draft --stdin
 prep generate --stdin
+onboard --resume <local-path>
+discover search --stdin
+safety classify|answer|can-submit --stdin
 telemetry status|enable|disable|record --stdin
 `);
 }
@@ -118,6 +136,67 @@ async function handleProfile(action, rest) {
   }
 
   fail('Usage: applykit profile <set|migrate|check|field>');
+}
+
+async function readStoredFacts() {
+  if (!existsSync(getFactsPath())) {
+    return [];
+  }
+  const parsed = JSON.parse(await readFile(getFactsPath(), 'utf8'));
+  return parsed.facts ?? [];
+}
+
+async function handleOnboard(action, rest) {
+  const resumePath = action === '--resume' ? rest[0] : action;
+  if (!resumePath || resumePath === '--stdin') {
+    fail('Usage: applykit onboard --resume <path>');
+  }
+  const extras = rest.includes('--stdin') || action === '--stdin' ? await readStdinJson() : {};
+  writeJson(await onboardResume(resumePath, extras));
+}
+
+async function handleDiscover(action) {
+  if (action !== 'search') {
+    fail('Usage: applykit discover search --stdin');
+  }
+  const input = await readStdinJson();
+  const profile = await readProfile();
+  writeJson(
+    searchJobs({
+      query: input.query ?? '',
+      listings: input.listings ?? [],
+      profile,
+    }),
+  );
+}
+
+async function handleSafety(action) {
+  const input = action === 'status' ? {} : await readStdinJson();
+  if (action === 'classify') {
+    writeJson(classifySafetyPause(input));
+    return;
+  }
+  if (action === 'answer') {
+    const facts = input.facts ?? (await readStoredFacts());
+    const resumeText = input.resumeText ?? (await readResumeText());
+    writeJson(proposeAnswer({ ...input, facts, resumeText }));
+    return;
+  }
+  if (action === 'can-submit') {
+    writeJson(canSubmit(input));
+    return;
+  }
+  fail('Usage: applykit safety <classify|answer|can-submit> --stdin');
+}
+
+async function handleFacts(action) {
+  if (action === 'extract') {
+    const input = await readStdinJson();
+    const resumeText = input.resumeText ?? (await readResumeText());
+    writeJson(extractFactsFromResume(resumeText, input.sourcePath ?? 'resume.txt'));
+    return;
+  }
+  fail('Usage: applykit facts extract --stdin');
 }
 
 async function handleResume(action, rest) {
@@ -185,12 +264,16 @@ async function handleCoverLetter(action) {
     if (!profile) {
       fail('Profile not found');
     }
+    const facts = input.facts ?? (await readStoredFacts());
+    const resumeText = input.resumeText ?? (await readResumeText());
     writeJson(
       draftCoverLetter({
         profile,
         company: input.company,
         role: input.role,
         highlights: input.highlights ?? [],
+        resumeText,
+        facts,
       }),
     );
     return;

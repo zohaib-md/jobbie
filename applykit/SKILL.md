@@ -15,28 +15,29 @@ Invoke this skill as `applykit`, `$applykit`, or `/applykit`.
 
 Use `scripts/applykit.mjs` for private state and deterministic checks. Read [references/SCHEMAS.md](references/SCHEMAS.md) before profile, score, ledger, or outcome operations.
 
-1. Ask for a local PDF, DOCX, or text résumé. Import it without modifying the source.
-2. Run `profile check`. Collect only missing facts, then run `profile migrate --stdin` or `profile set --stdin`.
+1. Ask for a local PDF, DOCX, or text résumé. Import it without modifying the source. Prefer a `.txt` or `.md` extract. Run `onboard --resume <path>` to store verified facts with their résumé section.
+2. Run `profile check`. Collect only missing facts, then run `profile migrate --stdin` or `profile set --stdin`. Never invent work authorization, dates, or compensation.
 3. Store the profile in OS-backed storage (macOS Keychain with encrypted-file fallback). Store the canonical résumé and append-only ledgers in `~/.applykit/`.
-4. Use `review-each` for per-application approval. Use `routine-auto` only when the current request authorizes the destination or batch and every automatic-eligibility condition passes.
-5. Disclose that telemetry is disabled by default. The candidate may run `telemetry enable` explicitly.
+4. Use `review-each` for per-application approval. `routine-auto` may prepare an authorized batch, but every actual submission still needs explicit per-submission confirmation. `autoEligible: true` is never sufficient to submit.
+5. Disclose that telemetry is disabled by default. The candidate may run `telemetry enable` explicitly. When enabled, only these fields may be previewed locally: `event`, `stage`, `atsPlatform`, `seniority`, `fitScore`, `outcome`. There is no network relay unless the candidate configures one later.
 
 Never store passwords, MFA codes, government IDs, demographic data, CAPTCHA answers, browser session data, or inferred candidate facts.
 
 ## Discover and assess
 
-1. Resolve discovery leads to the direct employer or ATS page.
-2. Verify the application channel immediately before assessment. Mark it `active`, `closed`, or `unclear`.
-3. Classify eligibility after checking residence, location, work authorization, sponsorship, schedule, and employment type.
-4. Extract explicit seniority, experience range, work mode, locations, comparable published salary maximum, and all must-have requirements.
-5. Classify each must-have as `met`, `partial`, `missing`, or `unclear` with résumé-backed evidence.
-6. Run `ats analyze --stdin` before applying to surface keyword gaps from verified facts only.
-7. Run `score --stdin` and obey the returned gate decision:
+1. Collect postings from public employer or ATS pages in the candidate's browser. If a CAPTCHA, login wall, or bot check appears, stop. Do not scrape around it.
+2. Pass collected listings to `discover search --stdin` with the candidate query (for example `senior engineer`). Rank locally. Do not fabricate jobs.
+3. Verify the application channel immediately before assessment. Mark it `active`, `closed`, or `unclear`.
+4. Classify eligibility after checking residence, location, work authorization, sponsorship, schedule, and employment type.
+5. Extract explicit seniority, experience range, work mode, locations, comparable published salary maximum, and all must-have requirements.
+6. Classify each must-have as `met`, `partial`, `missing`, or `unclear` with résumé-backed evidence.
+7. Run `ats analyze --stdin` before applying to surface keyword gaps from verified facts only.
+8. Run `score --stdin` and obey the returned gate decision:
    - `exclude`: closed channel, ineligibility, excluded company/location, or incompatible work mode.
    - `ask`: unclear posting status, eligibility, authorization, location/work mode, seniority, or requirement evidence.
    - `skip`: non-target seniority, compensation below floor, insufficient must-have coverage, or score below 70.
-   - `review`: candidate for manual review or authorized routine auto-submission.
-8. Treat `autoEligible: true` as necessary but not sufficient to submit.
+   - `review`: candidate for manual review. Never treat this as silent submit.
+9. Treat `autoEligible: true` as necessary but not sufficient to submit.
 
 ## Apply
 
@@ -48,8 +49,8 @@ Never store passwords, MFA codes, government IDs, demographic data, CAPTCHA answ
 6. Follow [references/APPLICATION_GUIDANCE.md](references/APPLICATION_GUIDANCE.md) for narrative answers.
 7. Use `cover-letter draft --stdin` when a cover letter is required. The candidate must review before submission.
 8. Upload only the canonical résumé unless the candidate explicitly provides another attachment.
-9. Stop for login/SSO/MFA, CAPTCHA, legal attestations, unclear authorization or compensation, sensitive identifiers, demographic questions, and judgment-only questions.
-10. Record `submitted` only after visible success confirmation.
+9. Stop for login/SSO/MFA, CAPTCHA, legal attestations, unclear authorization or compensation, sensitive identifiers, demographic questions, and judgment-only questions. Run `safety classify --stdin` on page or field text. Never solve CAPTCHA, enter MFA codes, or bypass bot detection.
+10. Record `submitted` only after visible success confirmation (`visibleConfirmation: true` on `ledger add`). Prepared packets use status `prepared`.
 11. Record workflow telemetry with `telemetry record --stdin` only when telemetry is enabled.
 
 ## Outcomes, prep, and reviews
@@ -69,6 +70,12 @@ node scripts/applykit.mjs profile migrate --stdin
 node scripts/applykit.mjs profile check
 node scripts/applykit.mjs profile field <allowed-field>
 node scripts/applykit.mjs resume import <local-path>
+node scripts/applykit.mjs onboard --resume <local-path>
+node scripts/applykit.mjs facts extract --stdin
+node scripts/applykit.mjs safety classify --stdin
+node scripts/applykit.mjs safety answer --stdin
+node scripts/applykit.mjs safety can-submit --stdin
+node scripts/applykit.mjs discover search --stdin
 node scripts/applykit.mjs score --stdin
 node scripts/applykit.mjs ats analyze --stdin
 node scripts/applykit.mjs cover-letter draft --stdin
