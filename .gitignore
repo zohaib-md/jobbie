@@ -3,6 +3,7 @@ node_modules/
 *.log
 .env
 .env.*
+*.tgz
 
 # Local candidate artifacts (never commit)
 profile.json
