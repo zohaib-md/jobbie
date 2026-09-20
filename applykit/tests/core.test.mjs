@@ -74,6 +74,7 @@ test('cover letter uses verified highlights only', () => {
     company: 'Good Co',
     role: 'Senior Engineer',
     highlights: ['Led API migration to TypeScript'],
+    resumeText: 'Led API migration to TypeScript on AWS.',
   });
   assert.match(letter.body, /Led API migration to TypeScript/);
   assert.match(letter.body, /Good Co/);

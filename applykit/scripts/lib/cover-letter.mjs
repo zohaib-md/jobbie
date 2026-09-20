@@ -1,10 +1,31 @@
-export function draftCoverLetter({ profile, company, role, highlights = [] }) {
-  const verifiedHighlights = highlights.filter(Boolean).slice(0, 3);
+import { highlightIsVerified } from './facts.mjs';
+
+export function draftCoverLetter({
+  profile,
+  company,
+  role,
+  highlights = [],
+  resumeText = '',
+  facts = [],
+}) {
+  const verifiedHighlights = highlights
+    .filter((item) => highlightIsVerified(item, resumeText, facts))
+    .slice(0, 3);
+  const rejectedHighlights = highlights.filter(
+    (item) => item && !highlightIsVerified(item, resumeText, facts),
+  );
   const intro = `Dear Hiring Team at ${company},`;
+  const focus = profile.targetRoles?.join(', ') || 'my target domain';
   const body = [
     `I am writing to express interest in the ${role} role.`,
-    `My background includes ${profile.yearsExperience ?? 'several'} years of experience focused on ${profile.targetRoles?.join(', ') || 'my target domain'}.`,
   ];
+  if (profile.yearsExperience) {
+    body.push(
+      `My background includes ${profile.yearsExperience} years of experience focused on ${focus}.`,
+    );
+  } else {
+    body.push(`My verified experience is focused on ${focus}.`);
+  }
 
   if (verifiedHighlights.length) {
     body.push(
@@ -32,5 +53,6 @@ export function draftCoverLetter({ profile, company, role, highlights = [] }) {
       'Do not claim metrics, tools, or employers that are not verified.',
       'Ask the candidate to review before pasting into any application form.',
     ],
+    rejectedHighlights,
   };
 }
