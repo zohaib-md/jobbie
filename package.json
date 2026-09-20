@@ -1,0 +1,47 @@
+{
+  "name": "applykit",
+  "version": "1.0.0",
+  "description": "Privacy-first Agent Skill and CLI for evidence-based job discovery, application completion, and outcome tracking.",
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "applykit": "bin/applykit.mjs"
+  },
+  "author": "Manthan Sharma <manthan.jsharma@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/manthan-jsharma/apply-kit-npm"
+  },
+  "bugs": {
+    "url": "https://github.com/manthan-jsharma/apply-kit-npm/issues"
+  },
+  "homepage": "https://github.com/manthan-jsharma/apply-kit-npm#readme",
+  "files": [
+    "bin/",
+    "installer/src/",
+    "applykit/",
+    "LICENSE",
+    "README.md"
+  ],
+  "keywords": [
+    "agent-skills",
+    "skill",
+    "job-search",
+    "job-application",
+    "career",
+    "ats",
+    "cover-letter",
+    "interview-prep"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "node --test applykit/tests/*.test.mjs installer/tests/*.test.mjs",
+    "check": "node --check applykit/scripts/applykit.mjs && node --check applykit/scripts/secret-store.mjs && node --check installer/src/cli.mjs && node --check installer/src/installer.mjs && node --check bin/applykit.mjs",
+    "prepack": "npm run check && npm test"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
