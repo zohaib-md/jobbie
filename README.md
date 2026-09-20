@@ -200,22 +200,6 @@ npm run check
 
 See [CONTRIBUTING.md](CONTRIBUTING.md). Starter issues: [GOOD_FIRST_ISSUES.md](GOOD_FIRST_ISSUES.md).
 
-## Acknowledgements
-
-jobbie is derived from [Applykit](https://github.com/manthan-jsharma/apply-kit-npm) 1.0.0 by Manthan Sharma (`manthan.jsharma@gmail.com`). The original skill, installer, scoring, and local-store design are that work.
-
-This repository adds, on top of that base:
-
-- local DOCX and simple PDF text import (no OCR)
-- tested safety pauses for MFA, CAPTCHA, legal attestations, and unverifiable answers
-- sourced résumé facts that refuse to guess missing fields
-- a ledger that records `submitted` only after visible confirmation
-
-Do not treat jobbie as a from-scratch rewrite of Applykit.
-
 ## License
 
 MIT. See [LICENSE](LICENSE).
-
-Copyright (c) 2026 Applykit Contributors  
-Copyright (c) 2026 Mohammad Zohaib

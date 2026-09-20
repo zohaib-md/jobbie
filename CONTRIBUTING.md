@@ -1,6 +1,6 @@
 # Contributing
 
-Thanks for helping improve jobbie. This is an MIT-licensed side project derived from Applykit. Keep it small, honest, and safe.
+Thanks for helping improve jobbie. This is an MIT-licensed side project. Keep it small, honest, and safe.
 
 ## Setup
 

@@ -8,9 +8,6 @@
     "jobbie": "bin/jobbie.mjs"
   },
   "author": "Mohammad Zohaib",
-  "contributors": [
-    "Manthan Sharma <manthan.jsharma@gmail.com> (original Applykit 1.0.0)"
-  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/zohaib-md/jobbie.git"
