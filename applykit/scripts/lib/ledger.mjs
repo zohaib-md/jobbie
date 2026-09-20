@@ -2,14 +2,14 @@ import { appendFile, mkdir, readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { createHash, randomUUID } from 'node:crypto';
 import {
-  APPLICATIONS_LEDGER,
-  OUTCOMES_LEDGER,
-  REVIEW_STATE,
-  STATE_ROOT,
+  getApplicationsLedger,
+  getOutcomesLedger,
+  getReviewStatePath,
+  getStateRoot,
 } from './paths.mjs';
 
 async function ensureState() {
-  await mkdir(STATE_ROOT, { recursive: true, mode: 0o700 });
+  await mkdir(getStateRoot(), { recursive: true, mode: 0o700 });
 }
 
 async function readNdjson(path) {
@@ -55,7 +55,7 @@ function fingerprint(entry) {
 }
 
 export async function checkDuplicate(entry) {
-  const rows = await readNdjson(APPLICATIONS_LEDGER);
+  const rows = await readNdjson(getApplicationsLedger());
   const fp = fingerprint(entry);
   const exact = rows.find((row) => row.fingerprint === fp);
   if (exact) {
@@ -83,19 +83,32 @@ export async function addApplication(entry) {
   if (duplicate.duplicate && !entry.duplicateOverride) {
     return { ok: false, ...duplicate };
   }
+  const requestedStatus = entry.status ?? 'prepared';
+  if (requestedStatus === 'submitted' && entry.visibleConfirmation !== true) {
+    return {
+      ok: false,
+      reason: 'missing-visible-confirmation',
+      message: 'Record submitted only after a visible success confirmation from the candidate or the site.',
+    };
+  }
+  const {
+    duplicateOverride: _duplicateOverride,
+    ...rest
+  } = entry;
   const row = {
+    ...rest,
     id: randomUUID(),
     fingerprint: duplicate.fingerprint ?? fingerprint(entry),
     recordedAt: new Date().toISOString(),
-    status: entry.status ?? 'submitted',
-    ...entry,
+    status: requestedStatus,
+    visibleConfirmation: requestedStatus === 'submitted',
   };
-  await appendNdjson(APPLICATIONS_LEDGER, row);
+  await appendNdjson(getApplicationsLedger(), row);
   return { ok: true, application: row };
 }
 
 export async function addOutcome(entry) {
-  const rows = await readNdjson(OUTCOMES_LEDGER);
+  const rows = await readNdjson(getOutcomesLedger());
   const existing = rows.find(
     (row) =>
       row.applicationId === entry.applicationId &&
@@ -110,13 +123,13 @@ export async function addOutcome(entry) {
     recordedAt: new Date().toISOString(),
     ...entry,
   };
-  await appendNdjson(OUTCOMES_LEDGER, row);
+  await appendNdjson(getOutcomesLedger(), row);
   return { ok: true, outcome: row, idempotent: false };
 }
 
 export async function reviewLedger() {
-  const applications = await readNdjson(APPLICATIONS_LEDGER);
-  const outcomes = await readNdjson(OUTCOMES_LEDGER);
+  const applications = await readNdjson(getApplicationsLedger());
+  const outcomes = await readNdjson(getOutcomesLedger());
   const unique = new Map();
   const duplicates = [];
 
@@ -128,14 +141,16 @@ export async function reviewLedger() {
     }
   }
 
-  const submitted = [...unique.values()].filter((row) => row.status === 'submitted');
+  const uniqueRows = [...unique.values()];
+  const submitted = uniqueRows.filter((row) => row.status === 'submitted');
+  const prepared = uniqueRows.filter((row) => row.status === 'prepared');
   const outcomeCounts = {};
   for (const outcome of outcomes) {
     outcomeCounts[outcome.outcome] = (outcomeCounts[outcome.outcome] ?? 0) + 1;
   }
 
-  const reviewState = existsSync(REVIEW_STATE)
-    ? JSON.parse(await readFile(REVIEW_STATE, 'utf8'))
+  const reviewState = existsSync(getReviewStatePath())
+    ? JSON.parse(await readFile(getReviewStatePath(), 'utf8'))
     : { acknowledgedSubmissions: 0 };
 
   const pendingSubmissionReview =
@@ -143,6 +158,7 @@ export async function reviewLedger() {
 
   return {
     uniqueSubmissions: submitted.length,
+    preparedCount: prepared.length,
     duplicateRows: duplicates.length,
     outcomes: outcomeCounts,
     pendingSubmissionReview,
@@ -170,7 +186,7 @@ export async function acknowledgeReview(input) {
     acknowledgedAt: new Date().toISOString(),
   };
   await import('node:fs/promises').then(({ writeFile }) =>
-    writeFile(REVIEW_STATE, `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 }),
+    writeFile(getReviewStatePath(), `${JSON.stringify(next, null, 2)}\n`, { mode: 0o600 }),
   );
   return { ok: true, ...next };
 }
