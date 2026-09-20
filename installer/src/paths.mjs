@@ -13,7 +13,7 @@ export function getSkillInstallPath() {
 }
 
 export function getStateRoot() {
-  return join(homedir(), '.applykit');
+  return process.env.APPLYKIT_HOME || join(homedir(), '.applykit');
 }
 
 export function getVendorSkillPaths() {

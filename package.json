@@ -1,6 +1,6 @@
 {
   "name": "applykit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Privacy-first Agent Skill and CLI for evidence-based job discovery, application completion, and outcome tracking.",
   "license": "MIT",
   "type": "module",
@@ -37,8 +37,8 @@
     "node": ">=20"
   },
   "scripts": {
-    "test": "node --test applykit/tests/*.test.mjs installer/tests/*.test.mjs",
-    "check": "node --check applykit/scripts/applykit.mjs && node --check applykit/scripts/secret-store.mjs && node --check installer/src/cli.mjs && node --check installer/src/installer.mjs && node --check bin/applykit.mjs",
+    "test": "node --test --test-concurrency=1 applykit/tests/*.test.mjs installer/tests/*.test.mjs",
+    "check": "node --check applykit/scripts/applykit.mjs && node --check applykit/scripts/secret-store.mjs && node --check applykit/scripts/lib/safety.mjs && node --check applykit/scripts/lib/facts.mjs && node --check applykit/scripts/lib/onboard.mjs && node --check applykit/scripts/lib/discover.mjs && node --check installer/src/cli.mjs && node --check installer/src/installer.mjs && node --check bin/applykit.mjs",
     "prepack": "npm run check && npm test"
   },
   "publishConfig": {

@@ -1,19 +1,28 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
-import { TELEMETRY_CONFIG, STATE_ROOT } from './paths.mjs';
+import { getTelemetryConfigPath, getStateRoot } from './paths.mjs';
 
 const DEFAULT_CONFIG = { enabled: false };
 
+export const TELEMETRY_FIELDS = [
+  'event',
+  'stage',
+  'atsPlatform',
+  'seniority',
+  'fitScore',
+  'outcome',
+];
+
 async function readConfig() {
-  if (!existsSync(TELEMETRY_CONFIG)) {
+  if (!existsSync(getTelemetryConfigPath())) {
     return { ...DEFAULT_CONFIG };
   }
-  return JSON.parse(await readFile(TELEMETRY_CONFIG, 'utf8'));
+  return JSON.parse(await readFile(getTelemetryConfigPath(), 'utf8'));
 }
 
 async function writeConfig(config) {
-  await mkdir(STATE_ROOT, { recursive: true, mode: 0o700 });
-  await writeFile(TELEMETRY_CONFIG, `${JSON.stringify(config, null, 2)}\n`, {
+  await mkdir(getStateRoot(), { recursive: true, mode: 0o700 });
+  await writeFile(getTelemetryConfigPath(), `${JSON.stringify(config, null, 2)}\n`, {
     mode: 0o600,
   });
 }
@@ -22,7 +31,8 @@ export async function getTelemetryStatus() {
   const config = await readConfig();
   return {
     enabled: config.enabled === true,
-    note: 'Applykit ships with telemetry disabled by default.',
+    fields: TELEMETRY_FIELDS,
+    note: 'Applykit ships with telemetry disabled by default. No personal data is collected.',
   };
 }
 
@@ -44,16 +54,8 @@ export async function recordTelemetryEvent(event) {
 }
 
 function sanitizeEvent(event) {
-  const allowed = [
-    'event',
-    'stage',
-    'atsPlatform',
-    'seniority',
-    'fitScore',
-    'outcome',
-  ];
   const preview = {};
-  for (const key of allowed) {
+  for (const key of TELEMETRY_FIELDS) {
     if (event[key] !== undefined) {
       preview[key] = event[key];
     }

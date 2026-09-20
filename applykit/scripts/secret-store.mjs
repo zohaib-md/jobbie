@@ -5,11 +5,13 @@ import { homedir, platform } from 'node:os';
 import { join } from 'node:path';
 import { promisify } from 'node:util';
 import { createCipheriv, createDecipheriv, randomBytes, scryptSync } from 'node:crypto';
-import { PROFILE_KEY, STATE_ROOT } from './lib/paths.mjs';
+import { PROFILE_KEY, getStateRoot } from './lib/paths.mjs';
 
 const execFileAsync = promisify(execFile);
 
-const FALLBACK_PATH = join(STATE_ROOT, 'profile.enc');
+function getFallbackPath() {
+  return join(getStateRoot(), 'profile.enc');
+}
 
 function getFallbackKey() {
   const salt = 'applykit-profile-v1';
@@ -69,17 +71,17 @@ async function writeMacProfile(profile) {
 }
 
 async function readFallbackProfile() {
-  if (!existsSync(FALLBACK_PATH)) {
+  if (!existsSync(getFallbackPath())) {
     return null;
   }
-  const encoded = await readFile(FALLBACK_PATH, 'utf8');
+  const encoded = await readFile(getFallbackPath(), 'utf8');
   return decryptJson(encoded.trim());
 }
 
 async function writeFallbackProfile(profile) {
-  await mkdir(STATE_ROOT, { recursive: true, mode: 0o700 });
-  await writeFile(FALLBACK_PATH, encryptJson(profile), { mode: 0o600 });
-  await chmod(FALLBACK_PATH, 0o600);
+  await mkdir(getStateRoot(), { recursive: true, mode: 0o700 });
+  await writeFile(getFallbackPath(), encryptJson(profile), { mode: 0o600 });
+  await chmod(getFallbackPath(), 0o600);
 }
 
 export async function readProfile() {

@@ -1,13 +1,7 @@
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-export const STATE_ROOT = join(homedir(), '.applykit');
 export const PROFILE_KEY = 'applykit.profile';
-export const RESUME_PATH = join(STATE_ROOT, 'resume.txt');
-export const APPLICATIONS_LEDGER = join(STATE_ROOT, 'applications.ndjson');
-export const OUTCOMES_LEDGER = join(STATE_ROOT, 'outcomes.ndjson');
-export const TELEMETRY_CONFIG = join(STATE_ROOT, 'telemetry.json');
-export const REVIEW_STATE = join(STATE_ROOT, 'review-state.json');
 
 export const ALLOWED_PROFILE_FIELDS = [
   'fullName',
@@ -29,3 +23,39 @@ export const ALLOWED_PROFILE_FIELDS = [
   'skills',
   'yearsExperience',
 ];
+
+export function getStateRoot() {
+  return process.env.APPLYKIT_HOME || join(homedir(), '.applykit');
+}
+
+export function getResumePath() {
+  return join(getStateRoot(), 'resume.txt');
+}
+
+export function getFactsPath() {
+  return join(getStateRoot(), 'facts.json');
+}
+
+export function getApplicationsLedger() {
+  return join(getStateRoot(), 'applications.ndjson');
+}
+
+export function getOutcomesLedger() {
+  return join(getStateRoot(), 'outcomes.ndjson');
+}
+
+export function getTelemetryConfigPath() {
+  return join(getStateRoot(), 'telemetry.json');
+}
+
+export function getReviewStatePath() {
+  return join(getStateRoot(), 'review-state.json');
+}
+
+/** @deprecated Use getStateRoot() so APPLYKIT_HOME is honored. */
+export const STATE_ROOT = getStateRoot();
+export const RESUME_PATH = getResumePath();
+export const APPLICATIONS_LEDGER = getApplicationsLedger();
+export const OUTCOMES_LEDGER = getOutcomesLedger();
+export const TELEMETRY_CONFIG = getTelemetryConfigPath();
+export const REVIEW_STATE = getReviewStatePath();
