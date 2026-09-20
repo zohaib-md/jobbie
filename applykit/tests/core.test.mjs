@@ -108,3 +108,16 @@ test('profile validation reports missing required fields', () => {
   assert.equal(result.valid, false);
   assert.ok(result.missing.includes('email'));
 });
+
+test('profile validation treats empty targetRoles as missing', () => {
+  const result = validateProfile({
+    fullName: 'Jordan Blake',
+    email: 'jordan.blake@example.test',
+    targetRoles: [],
+    targetSeniority: 'senior',
+    workAuthorization: 'authorized',
+    submissionMode: 'review-each',
+  });
+  assert.equal(result.valid, false);
+  assert.ok(result.missing.includes('targetRoles'));
+});

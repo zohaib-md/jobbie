@@ -36,8 +36,8 @@ export async function onboardResume(resumePath, extras = {}) {
     email: factValue('email'),
     location: factValue('location'),
     skills,
-    targetRoles: extras.targetRoles ?? ['Software Engineer'],
-    targetSeniority: extras.targetSeniority ?? 'senior',
+    targetRoles: extras.targetRoles ?? [],
+    targetSeniority: extras.targetSeniority,
     workAuthorization: extras.workAuthorization,
     submissionMode: extras.submissionMode ?? 'review-each',
   });

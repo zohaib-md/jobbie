@@ -9,8 +9,15 @@ const REQUIRED_FIELDS = [
   'submissionMode',
 ];
 
+function isPresent(value) {
+  if (Array.isArray(value)) {
+    return value.length > 0;
+  }
+  return Boolean(value);
+}
+
 export function validateProfile(profile) {
-  const missing = REQUIRED_FIELDS.filter((field) => !profile[field]);
+  const missing = REQUIRED_FIELDS.filter((field) => !isPresent(profile[field]));
   const unknown = Object.keys(profile).filter(
     (field) => !ALLOWED_PROFILE_FIELDS.includes(field),
   );
