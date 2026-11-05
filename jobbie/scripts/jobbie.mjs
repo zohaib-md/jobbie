@@ -30,12 +30,13 @@ import { getFactsPath } from './lib/paths.mjs';
 import { readFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { readStdinJson, writeJson, fail } from './lib/stdio.mjs';
+import { printLocalHelp } from './lib/help.mjs';
 
 async function main(argv = process.argv.slice(2)) {
   const [domain, action, ...rest] = argv;
 
-  if (!domain || domain === 'help' || domain === '--help') {
-    printHelp();
+  if (!domain || domain === 'help' || argv.includes('--help') || argv.includes('-h')) {
+    printLocalHelp(domain);
     return;
   }
 
@@ -67,28 +68,6 @@ async function main(argv = process.argv.slice(2)) {
     default:
       fail(`Unknown command domain: ${domain}`);
   }
-}
-
-function printHelp() {
-  process.stdout.write(`jobbie local commands
-
-profile set --stdin
-profile migrate --stdin
-profile check
-profile field <field>
-
-resume import <local-path>
-
-score --stdin
-ledger check|add|outcome|review|review-ack --stdin
-ats analyze --stdin
-cover-letter draft --stdin
-prep generate --stdin
-onboard --resume <local-path>
-discover search --stdin
-safety classify|answer|can-submit --stdin
-telemetry status|enable|disable|record --stdin
-`);
 }
 
 async function handleProfile(action, rest) {

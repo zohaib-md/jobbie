@@ -1,5 +1,6 @@
 import { installSkill, getInstallStatus, setAutoUpdate } from './installer.mjs';
 import { readPackageVersion } from './version.mjs';
+import { printLocalHelp } from '../../jobbie/scripts/lib/help.mjs';
 
 function printHelp() {
   process.stdout.write(`jobbie — privacy-first job application Agent Skill
@@ -11,14 +12,15 @@ Usage:
   npx jobbie updates enable   Enable automatic update checks
   npx jobbie updates disable  Disable automatic update checks
 
-Requires Node.js 20+. After install, local commands (onboard, discover, ledger, …) are forwarded to the bundled skill CLI.
+Requires Node.js 20+. Local commands are available directly from this package.
 `);
+  printLocalHelp();
 }
 
 export async function main(argv = process.argv.slice(2)) {
   const [command, subcommand] = argv;
 
-  if (!command || command === 'help' || command === '--help' || command === '-h') {
+  if (!command || command === 'help' || argv.includes('--help') || argv.includes('-h')) {
     printHelp();
     return;
   }
